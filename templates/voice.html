@@ -1,0 +1,414 @@
+{% extends "base.html" %}
+
+{% block title %}AI Voice Assistant{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assistant-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .assistant-header h2 {
+        color: #333;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .assistant-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .controls-panel {
+        background: #f0f2ff;
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .control-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .voice-controls {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .voice-btn {
+        padding: 15px 40px;
+        font-size: 16px;
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .voice-btn.recording {
+        background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 5px 15px rgba(245,87,108,0.4);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(245,87,108,0.6);
+        }
+    }
+    
+    .transcript-panel {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        padding: 25px;
+        min-height: 400px;
+        max-height: 600px;
+        overflow-y: auto;
+        margin-bottom: 25px;
+    }
+    
+    .transcript-entry {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 10px;
+    }
+    
+    .transcript-entry.user {
+        background: #e3f2fd;
+        border-left: 4px solid #667eea;
+    }
+    
+    .transcript-entry.assistant {
+        background: #f3e5f5;
+        border-left: 4px solid #f093fb;
+    }
+    
+    .transcript-entry .role {
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #333;
+    }
+    
+    .transcript-entry .content {
+        color: #555;
+        line-height: 1.6;
+    }
+    
+    .transcript-entry .timestamp {
+        font-size: 12px;
+        color: #999;
+        margin-top: 5px;
+    }
+    
+    .file-upload-section {
+        background: white;
+        border: 2px dashed #667eea;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 25px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .file-upload-section:hover {
+        background: #f8f9ff;
+    }
+    
+    .audio-player {
+        display: none;
+        margin-top: 15px;
+    }
+    
+    .status-indicator {
+        text-align: center;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 8px;
+        display: none;
+    }
+    
+    .status-indicator.active {
+        display: block;
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .status-indicator.error {
+        display: block;
+        background: #ffebee;
+        color: #c62828;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="assistant-header">
+    <h2>🎙️ AI Voice Assistant</h2>
+    <p>Interact with advanced AI models through voice or text</p>
+</div>
+
+<div class="assistant-container">
+    <div class="controls-panel">
+        <h3 style="margin-bottom: 15px;">⚙️ Assistant Settings</h3>
+        <div class="control-group">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="modelSelect">AI Model</label>
+                <select id="modelSelect">
+                    <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
+                    <option value="llama-3.1-70b-versatile" selected>Llama 3.1 70B (Balanced)</option>
+                    <option value="gemma-7b-it">Gemma 7B</option>
+                    <option value="llama-3-8b-8192">Llama 3 8B</option>
+                    <option value="llama-3-70b-8192">Llama 3 70B</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="complexitySelect">Complexity Level</label>
+                <select id="complexitySelect">
+                    <option value="basic">Basic</option>
+                    <option value="intermediate" selected>Intermediate</option>
+                    <option value="complex">Complex</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="voice-controls">
+        <button class="btn voice-btn" id="speakBtn" onclick="startRecording()">
+            🎤 Press to Speak
+        </button>
+        <button class="btn btn-secondary voice-btn" id="stopSpeakingBtn" onclick="stopAudio()" style="display: none;">
+            🔇 Stop Speaking
+        </button>
+        <button class="btn btn-secondary" onclick="clearTranscript()">
+            🗑️ Clear Transcript
+        </button>
+    </div>
+    
+    <div class="file-upload-section" onclick="document.getElementById('fileUpload').click()">
+        <input type="file" id="fileUpload" style="display: none;" 
+               accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg"
+               onchange="uploadFile()">
+        <p>📎 Click to upload documents or images</p>
+        <small style="color: #999;">Supports PDF, DOCX, DOC, TXT, PNG, JPG, JPEG</small>
+        <div id="uploadStatus"></div>
+    </div>
+    
+    <div id="statusIndicator" class="status-indicator"></div>
+    
+    <audio id="audioPlayer" class="audio-player" controls></audio>
+    
+    <div class="transcript-panel" id="transcriptPanel">
+        <p style="text-align: center; color: #999;">
+            Conversation transcript will appear here...
+        </p>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
+
+<script>
+    let isRecording = false;
+    let recognition;
+    let currentAudio;
+    
+    // Initialize Speech Recognition
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            addTranscriptEntry('user', transcript);
+            processVoiceInput(transcript);
+        };
+        
+        recognition.onerror = function(event) {
+            showStatus('Error: ' + event.error, 'error');
+            stopRecording();
+        };
+        
+        recognition.onend = function() {
+            stopRecording();
+        };
+    }
+    
+    function startRecording() {
+        if (!recognition) {
+            showStatus('Speech recognition not supported in this browser', 'error');
+            return;
+        }
+        
+        isRecording = true;
+        const speakBtn = document.getElementById('speakBtn');
+        speakBtn.classList.add('recording');
+        speakBtn.innerHTML = '🔴 Recording... Click to stop';
+        speakBtn.onclick = stopRecording;
+        
+        recognition.start();
+        showStatus('Listening...', 'active');
+    }
+    
+    function stopRecording() {
+        if (recognition && isRecording) {
+            recognition.stop();
+        }
+        isRecording = false;
+        const speakBtn = document.getElementById('speakBtn');
+        speakBtn.classList.remove('recording');
+        speakBtn.innerHTML = '🎤 Press to Speak';
+        speakBtn.onclick = startRecording;
+        hideStatus();
+    }
+    
+    function addTranscriptEntry(role, content) {
+        const transcriptPanel = document.getElementById('transcriptPanel');
+        
+        // Remove placeholder text
+        if (transcriptPanel.querySelector('p[style*="text-align: center"]')) {
+            transcriptPanel.innerHTML = '';
+        }
+        
+        const entry = document.createElement('div');
+        entry.className = `transcript-entry ${role}`;
+        entry.innerHTML = `
+            <div class="role">${role === 'user' ? '👤 You' : '🤖 Assistant'}</div>
+            <div class="content">${content}</div>
+            <div class="timestamp">${new Date().toLocaleTimeString()}</div>
+        `;
+        transcriptPanel.appendChild(entry);
+        transcriptPanel.scrollTop = transcriptPanel.scrollHeight;
+    }
+    
+    async function processVoiceInput(text) {
+        showStatus('Processing your request...', 'active');
+        
+        const model = document.getElementById('modelSelect').value;
+        const complexity = document.getElementById('complexitySelect').value;
+        
+        try {
+            const response = await fetch('/voice-chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    model: model,
+                    complexity: complexity
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                addTranscriptEntry('assistant', data.text);
+                playAudio(data.audio_url);
+                showStatus('Response ready', 'active');
+                setTimeout(hideStatus, 2000);
+            } else {
+                showStatus('Error: ' + (data.error || 'Unknown error'), 'error');
+            }
+        } catch (error) {
+            showStatus('Error processing request', 'error');
+        }
+    }
+    
+    function playAudio(audioUrl) {
+        const audioPlayer = document.getElementById('audioPlayer');
+        const stopBtn = document.getElementById('stopSpeakingBtn');
+        
+        audioPlayer.src = audioUrl;
+        audioPlayer.style.display = 'block';
+        stopBtn.style.display = 'inline-flex';
+        
+        audioPlayer.play();
+        currentAudio = audioPlayer;
+        
+        audioPlayer.onended = function() {
+            stopBtn.style.display = 'none';
+        };
+    }
+    
+    function stopAudio() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            document.getElementById('stopSpeakingBtn').style.display = 'none';
+        }
+    }
+    
+    async function uploadFile() {
+        const fileInput = document.getElementById('fileUpload');
+        const file = fileInput.files[0];
+        
+        if (!file) return;
+        
+        const uploadStatus = document.getElementById('uploadStatus');
+        uploadStatus.innerHTML = '<p style="color: #667eea;">Uploading and analyzing...</p>';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('model', document.getElementById('modelSelect').value);
+        formData.append('type', 'document');
+        
+        try {
+            const response = await fetch('/process-voice-file', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                uploadStatus.innerHTML = '<p style="color: green;">✓ File analyzed successfully</p>';
+                addTranscriptEntry('user', `Uploaded: ${file.name}`);
+                addTranscriptEntry('assistant', data.text);
+                playAudio(data.audio_url);
+            } else {
+                uploadStatus.innerHTML = '<p style="color: red;">✗ Error: ' + data.error + '</p>';
+            }
+            
+            setTimeout(() => {
+                uploadStatus.innerHTML = '';
+            }, 3000);
+        } catch (error) {
+            uploadStatus.innerHTML = '<p style="color: red;">✗ Upload failed</p>';
+        }
+        
+        fileInput.value = '';
+    }
+    
+    function clearTranscript() {
+        if (confirm('Are you sure you want to clear the transcript?')) {
+            document.getElementById('transcriptPanel').innerHTML = 
+                '<p style="text-align: center; color: #999;">Conversation transcript will appear here...</p>';
+        }
+    }
+    
+    function showStatus(message, type) {
+        const indicator = document.getElementById('statusIndicator');
+        indicator.textContent = message;
+        indicator.className = `status-indicator ${type}`;
+    }
+    
+    function hideStatus() {
+        document.getElementById('statusIndicator').className = 'status-indicator';
+    }
+</script>
+{% endblock %}

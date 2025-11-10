@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Court Trial Simulation{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .page-header h2 {
+        color: #333;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .page-header p {
+        color: #666;
+    }
+    
+    .simulation-form {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .file-upload {
+        border: 2px dashed #667eea;
+        padding: 30px;
+        text-align: center;
+        border-radius: 8px;
+        background: #f8f9ff;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    .file-upload:hover {
+        background: #f0f2ff;
+    }
+    
+    .file-upload input[type="file"] {
+        display: none;
+    }
+    
+    .file-upload-label {
+        color: #667eea;
+        font-weight: 500;
+        cursor: pointer;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+    }
+    
+    #loadingSpinner {
+        display: none;
+        text-align: center;
+        margin: 30px 0;
+    }
+    
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 15px;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 768px) {
+        .two-column {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>⚖️ Court Trial Simulation</h2>
+    <p>Simulate a court case and receive an AI-generated verdict</p>
+</div>
+
+<form class="simulation-form" method="POST" action="/trial-simulation" enctype="multipart/form-data" id="trialForm">
+    <div class="form-group">
+        <label for="category">Case Category *</label>
+        <select id="category" name="category" required>
+            <option value="">Select a category...</option>
+            <option value="Criminal Law">Criminal Law</option>
+            <option value="Civil Law">Civil Law</option>
+            <option value="Family Law">Family Law</option>
+            <option value="Corporate Law">Corporate Law</option>
+            <option value="Property Law">Property Law</option>
+            <option value="Constitutional Law">Constitutional Law</option>
+            <option value="Others">Others</option>
+        </select>
+    </div>
+    
+    <div class="two-column">
+        <div class="form-group">
+            <label for="plaintiff_statement">Accuser / Plaintiff's Statement *</label>
+            <textarea id="plaintiff_statement" name="plaintiff_statement" 
+                      placeholder="Enter the plaintiff's statement and arguments..." 
+                      required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="defendant_statement">Defender / Defendant's Statement *</label>
+            <textarea id="defendant_statement" name="defendant_statement" 
+                      placeholder="Enter the defendant's statement and arguments..." 
+                      required></textarea>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Additional Documents (Optional)</label>
+        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" name="file" 
+                   accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg">
+            <label class="file-upload-label">
+                📎 Click to upload PDF, DOCX, or Image files<br>
+                <small id="fileName" style="color: #999;"></small>
+            </label>
+        </div>
+    </div>
+    
+    <div class="form-actions">
+        <button type="submit" class="btn">Generate Verdict</button>
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+</form>
+
+<div id="loadingSpinner">
+    <div class="spinner"></div>
+    <p>Analyzing case and generating verdict... This may take a moment.</p>
+</div>
+
+<script>
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const fileName = e.target.files[0]?.name || '';
+        document.getElementById('fileName').textContent = fileName ? `Selected: ${fileName}` : '';
+    });
+    
+    document.getElementById('trialForm').addEventListener('submit', function() {
+        document.getElementById('loadingSpinner').style.display = 'block';
+        document.querySelector('.simulation-form').style.display = 'none';
+    });
+</script>
+{% endblock %}

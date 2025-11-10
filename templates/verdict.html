@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}AI-Generated Verdict - Nyay Mitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .verdict-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .page-header h2 {
+        color: #1a202c;
+        margin-bottom: 10px;
+        font-size: 32px;
+        font-weight: 700;
+    }
+    
+    .category-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    
+    .verdict-content {
+        background: rgba(248, 249, 250, 0.8);
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        white-space: pre-wrap;
+        line-height: 1.8;
+        color: #2d3748;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+    
+    .feedback-section {
+        background: rgba(248, 249, 250, 0.8);
+        padding: 30px;
+        border-radius: 10px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .feedback-section h3 {
+        color: #1a202c;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: 700;
+    }
+    
+    .rating-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+        flex-direction: row-reverse;
+    }
+    
+    .rating-group input[type="radio"] {
+        display: none;
+    }
+    
+    .rating-group label {
+        cursor: pointer;
+        font-size: 32px;
+        transition: transform 0.2s;
+        color: #cbd5e0;
+    }
+    
+    .rating-group label:hover,
+    .rating-group label:hover ~ label {
+        color: #ffd700;
+        transform: scale(1.2);
+    }
+    
+    .rating-group input[type="radio"]:checked ~ label {
+        color: #ffd700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="verdict-container">
+    <div class="page-header">
+        <h2>⚖️ AI-Generated Verdict</h2>
+        <span class="category-badge">{{ category }}</span>
+    </div>
+    
+    <div class="verdict-content">{{ verdict }}</div>
+    
+    <div class="actions">
+        <a href="/trial-simulation" class="btn">Submit a New Case</a>
+        <a href="/" class="btn btn-secondary">Back to Home</a>
+    </div>
+    
+    <div class="feedback-section">
+        <h3>📝 Provide Feedback</h3>
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label>Case Category</label>
+                <input type="text" name="category" value="{{ category }}" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label>How helpful was the verdict?</label>
+                <div class="rating-group">
+                    <input type="radio" id="star1" name="rating" value="1" required>
+                    <label for="star1">⭐</label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2">⭐</label>
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3">⭐</label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4">⭐</label>
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5">⭐</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="remarks">Additional Remarks</label>
+                <textarea id="remarks" name="remarks" placeholder="Share your thoughts..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn">Submit Feedback</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        
+        showLoading('Submitting Feedback...', 'Thank you for your input');
+        
+        try {
+            const response = await fetch('/submit-feedback', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            hideLoading();
+            alert(result.message || 'Feedback submitted successfully!');
+            e.target.reset();
+        } catch (error) {
+            hideLoading();
+            alert('Error submitting feedback. Please try again.');
+        }
+    });
+</script>
+{% endblock %}

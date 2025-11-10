@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Court Trial Simulation - Nyay Mitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .simulation-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    .page-header h2 {
+        color: #1a202c;
+        margin-bottom: 10px;
+        font-size: 32px;
+        font-weight: 700;
+    }
+    
+    .page-header p {
+        color: #4a5568;
+        font-size: 16px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="simulation-container">
+    <div class="page-header">
+        <h2>⚖️ Court Trial Simulation</h2>
+        <p>Simulate a court case and receive an AI-generated verdict</p>
+    </div>
+    
+    <form method="POST" action="/trial-simulation" enctype="multipart/form-data" id="simulationForm">
+        <div class="form-group">
+            <label for="category">Case Category</label>
+            <select id="category" name="category" required>
+                <option value="">Select a category</option>
+                <option value="Criminal Law">Criminal Law</option>
+                <option value="Civil Law">Civil Law</option>
+                <option value="Family Law">Family Law</option>
+                <option value="Corporate Law">Corporate Law</option>
+                <option value="Property Law">Property Law</option>
+                <option value="Constitutional Law">Constitutional Law</option>
+                <option value="Others">Others</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="plaintiff_statement">Accuser / Plaintiff's Statement</label>
+            <textarea id="plaintiff_statement" name="plaintiff_statement" required 
+                      placeholder="Enter the plaintiff's statement and arguments..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="defendant_statement">Defender / Defendant's Statement</label>
+            <textarea id="defendant_statement" name="defendant_statement" required 
+                      placeholder="Enter the defendant's statement and arguments..."></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="file">Upload Supporting Document (Optional)</label>
+            <input type="file" id="file" name="file" accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg">
+            <small style="color: #666; display: block; margin-top: 5px;">
+                Accepted formats: PDF, DOCX, DOC, TXT, PNG, JPG, JPEG (Max 16MB)
+            </small>
+        </div>
+        
+        <button type="submit" class="btn">Generate Verdict</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('simulationForm').addEventListener('submit', function(e) {
+        showLoading('Generating AI Verdict...', 'Analyzing case law and statements. This may take a moment.');
+    });
+</script>
+{% endblock %}

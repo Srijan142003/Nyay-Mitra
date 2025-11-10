@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Nyay Mitra{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 40px 20px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    
+    .welcome-section h2 {
+        color: #1a202c;
+        font-size: 36px;
+        margin-bottom: 10px;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .welcome-section p {
+        color: #2d3748;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    /* About Section */
+    .about-section {
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 16px;
+        margin-bottom: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    .about-section h2 {
+        color: #1a202c;
+        font-size: 32px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .about-content {
+        color: #2d3748;
+        font-size: 16px;
+        line-height: 1.8;
+        text-align: justify;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .about-content p {
+        margin-bottom: 15px;
+    }
+
+    .about-highlights {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .highlight-card {
+        background: rgba(255, 255, 255, 0.4);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .highlight-card .icon {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .highlight-card h3 {
+        color: #1a202c;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .highlight-card p {
+        color: #2d3748;
+        font-size: 14px;
+    }
+    
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    .feature-card {
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(10px);
+        padding: 35px;
+        border-radius: 16px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        background: rgba(255, 255, 255, 0.55);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .feature-card .icon {
+        font-size: 52px;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+    }
+    
+    .feature-card h3 {
+        color: #1a202c;
+        margin-bottom: 15px;
+        font-size: 24px;
+        font-weight: 700;
+    }
+    
+    .feature-card p {
+        color: #2d3748;
+        margin-bottom: 20px;
+        line-height: 1.7;
+        font-weight: 500;
+    }
+    
+    .feature-card .btn {
+        display: inline-block;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+
+    /* Team Section */
+    .team-section {
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        padding: 40px;
+        border-radius: 16px;
+        margin-top: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+
+    .team-section h2 {
+        color: #1a202c;
+        font-size: 32px;
+        margin-bottom: 30px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .team-member {
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(8px);
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        transition: all 0.3s;
+    }
+
+    .team-member:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    .team-member .avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+        border-radius: 50%;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        overflow: hidden;
+    }
+    
+    .team-member .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .team-member h3 {
+        color: #1a202c;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .team-member .role {
+        color: #4a5568;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .team-member .details {
+        color: #2d3748;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .team-member .details p {
+        margin: 5px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+    <h2>Welcome to Nyay Mitra</h2>
+    <p>Your Comprehensive AI-Powered Legal Assistant</p>
+</div>
+
+<!-- About Us Section -->
+<div class="about-section">
+    <h2>📖 About Nyay Mitra</h2>
+    <div class="about-content">
+        <p>
+            <strong>Nyay Mitra</strong> is an innovative AI-powered legal assistance platform designed to democratize access to legal knowledge and services. Our mission is to bridge the gap between complex legal systems and everyday individuals by providing intelligent, accessible, and reliable legal guidance.
+        </p>
+        <p>
+            Leveraging cutting-edge artificial intelligence technologies, Nyay Mitra offers three powerful features: simulated court trial verdicts based on real case law, an interactive legal chatbot for instant consultations, and a voice-enabled AI assistant for document analysis and legal research.
+        </p>
+        <p>
+            Whether you're a law student, legal professional, or someone seeking legal information, Nyay Mitra empowers you with the tools to understand and navigate the Indian legal system with confidence. Our platform provides contextually relevant legal precedents and insights to help you make informed decisions.
+        </p>
+    </div>
+
+    <div class="about-highlights">
+        <div class="highlight-card">
+            <div class="icon">🤖</div>
+            <h3>AI-Powered</h3>
+            <p>Advanced AI models for accurate legal analysis</p>
+        </div>
+        <div class="highlight-card">
+            <div class="icon">📚</div>
+            <h3>Case Law Database</h3>
+            <p>Access to extensive Indian legal precedents</p>
+        </div>
+        <div class="highlight-card">
+            <div class="icon">🎯</div>
+            <h3>User-Friendly</h3>
+            <p>Intuitive interface for all experience levels</p>
+        </div>
+        <div class="highlight-card">
+            <div class="icon">🔒</div>
+            <h3>Secure & Private</h3>
+            <p>Your data and queries remain confidential</p>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<h2 style="text-align: center; color: #1a202c; font-size: 32px; font-weight: 700; margin-bottom: 30px;">🚀 Our Features</h2>
+<div class="features-grid">
+    <div class="feature-card" onclick="window.location.href='/trial-simulation'">
+        <div class="icon">⚖️</div>
+        <h3>Court Trial Simulation</h3>
+        <p>Simulate court proceedings with AI-generated verdicts based on real case law and legal precedents.</p>
+        <a href="/trial-simulation" class="btn">Start Simulation</a>
+    </div>
+    
+    <div class="feature-card" onclick="window.location.href='/lawyer-up'">
+        <div class="icon">💬</div>
+        <h3>Lawyer Up - Nyay Mitra</h3>
+        <p>Chat with your personal AI legal consultant for guidance and legal information.</p>
+        <a href="/lawyer-up" class="btn">Start Chatting</a>
+    </div>
+    
+    <div class="feature-card" onclick="window.location.href='/ai-assistant'">
+        <div class="icon">🎤</div>
+        <h3>AI Voice Assistant</h3>
+        <p>Interact with voice-based AI assistant for document analysis and legal consultations.</p>
+        <a href="/ai-assistant" class="btn">Launch Assistant</a>
+    </div>
+</div>
+
+<!-- Team Section -->
+<div class="team-section">
+    <h2>👥 Meet Our Development Team</h2>
+    <div class="team-grid">
+        <div class="team-member">
+            <div class="avatar">
+                <img src="{{ url_for('static', filename='team/preetesh.jpeg') }}" alt="Preetesh Kumar Singha">
+            </div>
+            <h3>Preetesh Kumar Singha</h3>
+            <div class="role">Full Stack Developer</div>
+            <div class="details">
+                <p>📧 preeteshsingha66@gmail.com</p>
+                <p>🎓 Computer Science and Engineering</p>
+                <p>Full-Stack Development</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <div class="avatar">
+                <img src="{{ url_for('static', filename='team/srijan.jpeg') }}" alt="Srijan Kundu">
+            </div>
+            <h3>Srijan Kundu</h3>
+            <div class="role">Full Stack Developer</div>
+            <div class="details">
+                <p>📧 srijankundu14@gmail.com</p>
+                <p>🎓 Computer Science and Engineering</p>
+                <p>Research & Development</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <div class="avatar">
+                <img src="{{ url_for('static', filename='team/rajat.jpeg') }}" alt="Rajat Kumar Panda">
+            </div>
+            <h3>Rajat Kumar Panda</h3>
+            <div class="role">Backend Developer</div>
+            <div class="details">
+                <p>📧 22052923@kiit.ac.in</p>
+                <p>🎓 Computer Science and Engineering</p>
+                <p>Voice Assistant Design</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <div class="avatar">
+                <img src="{{ url_for('static', filename='team/rohan.jpeg') }}" alt="Rohan Chattopadhyay">
+            </div>
+            <h3>Rohan Chattopadhyay</h3>
+            <div class="role">Full Stack Developer</div>
+            <div class="details">
+                <p>📧 rohan.chat321@gmail.com</p>
+                <p>🎓 Computer Science and Engineering</p>
+                <p>Full-Stack Development</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <div class="avatar">
+                <img src="{{ url_for('static', filename='team/swapnil.jpeg') }}" alt="Swapnil Goswami">
+            </div>
+            <h3>Swapnil Goswami</h3>
+            <div class="role">AI/ML Developer</div>
+            <div class="details">
+                <p>📧 swapnil67goswami@gmail.com</p>
+                <p>🎓 Computer Science and Engineering</p>
+                <p>AI/ML Development</p>
+            </div>
+        </div>
+
+        <div class="team-member">
+            <div class="avatar">
+                <img src="{{ url_for('static', filename='team/sadat.jpeg') }}" alt="Sadat Hossen">
+            </div>
+            <h3>Sadat Hossen</h3>
+            <div class="role">Technical Writer</div>
+            <div class="details">
+                <p>📧 sadathossen12345@gmail.com</p>
+                <p>🎓 Computer Science and Engineering</p>
+                <p>Team Coordination & Documentation</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
