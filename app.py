@@ -103,7 +103,7 @@ def search_indian_kanoon(query, category):
 def generate_verdict_with_gemini(plaintiff_statement, defendant_statement, category, case_law_context=""):
     """Generate verdict using Gemini API"""
     try:
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""You are an AI legal assistant analyzing a {category} case. Based on the following information, provide a structured legal verdict.
 
@@ -357,7 +357,7 @@ def chat():
         context_text = json.dumps(legal_context)[:1500] if legal_context else ""
         
         # Generate response using Gemini
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""You are Nyay Mitra, a friendly and knowledgeable legal assistant for Indian law.
 
