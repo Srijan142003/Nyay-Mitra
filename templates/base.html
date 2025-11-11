@@ -377,20 +377,25 @@
                 padding-top: 70px;
             }
             
+            .navbar {
+                padding: 0 15px;
+            }
+            
             .navbar-container {
                 height: 60px;
             }
             
             .navbar-brand {
-                font-size: 20px;
+                font-size: 18px;
             }
             
             .navbar-brand .logo {
-                font-size: 28px;
+                font-size: 24px;
             }
             
             .mobile-menu-btn {
                 display: block;
+                z-index: 1001;
             }
             
             .nav-links {
@@ -402,25 +407,69 @@
                 backdrop-filter: blur(12px);
                 flex-direction: column;
                 padding: 20px;
-                gap: 15px;
-                transform: translateY(-100%);
-                transition: transform 0.3s;
+                gap: 10px;
+                transform: translateX(100%);
+                transition: transform 0.3s ease-in-out;
                 box-shadow: 0 5px 20px rgba(0,0,0,0.5);
                 border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                max-height: calc(100vh - 60px);
+                overflow-y: auto;
             }
             
             .nav-links.active {
-                transform: translateY(0);
+                transform: translateX(0);
+            }
+            
+            .nav-links li {
+                width: 100%;
             }
             
             .nav-links a {
                 width: 100%;
                 text-align: center;
                 padding: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .nav-links a::after {
+                display: none;
+            }
+            
+            .nav-links .user-info {
+                width: 100%;
+                text-align: center;
+                margin: 5px 0;
+            }
+            
+            .container {
+                margin: 15px 10px;
+                border-radius: 12px;
             }
             
             .content {
-                padding: 20px;
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar-brand {
+                font-size: 16px;
+            }
+            
+            .navbar-brand .logo {
+                font-size: 20px;
+            }
+            
+            .nav-links {
+                padding: 15px 10px;
+            }
+            
+            .nav-links a {
+                padding: 10px;
+                font-size: 14px;
             }
         }
     </style>
@@ -493,19 +542,37 @@
         function toggleMenu() {
             const navLinks = document.getElementById('navLinks');
             navLinks.classList.toggle('active');
+            
+            // Toggle hamburger animation
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
         }
         
         // Close mobile menu when clicking outside
         document.addEventListener('click', function(event) {
             const navLinks = document.getElementById('navLinks');
             const menuBtn = document.querySelector('.mobile-menu-btn');
+            const navbar = document.querySelector('.navbar');
             
             if (window.innerWidth <= 768 && 
-                !navLinks.contains(event.target) && 
-                !menuBtn.contains(event.target)) {
+                !navbar.contains(event.target) &&
+                navLinks.classList.contains('active')) {
                 navLinks.classList.remove('active');
+                menuBtn.textContent = '☰';
             }
         });
+        
+        // Close menu when clicking on a link
+        if (window.innerWidth <= 768) {
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', function() {
+                    const navLinks = document.getElementById('navLinks');
+                    const menuBtn = document.querySelector('.mobile-menu-btn');
+                    navLinks.classList.remove('active');
+                    menuBtn.textContent = '☰';
+                });
+            });
+        }
     </script>
     
     {% block extra_js %}{% endblock %}
